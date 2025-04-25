@@ -4,10 +4,9 @@ use App\Http\Controllers\AcaraController;
 use App\Http\Controllers\KehadiranController;
 use App\Http\Controllers\AnggotaController;
 use App\Http\Controllers\Auth\LoginController;
-
-Route::get('/', function () {
-    return view('welcome');
-});
+use App\Http\Controllers\QrcodeController;
+Route::get('/', [QrcodeController::class, 'welcome'])->name('welcome');
+Route::post('/generate-qr', [QrcodeController::class, 'generateQr'])->name('generate.qr');
 
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -21,15 +20,17 @@ Route::get('/test-acara-create', [AcaraController::class, 'create']);
 // Event routes
 Route::get('/acara', [AcaraController::class, 'index'])->name('acara.index');
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/acara', [AcaraController::class, 'index'])->name('acara.index');
+Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::get('/acara/create', [AcaraController::class, 'create'])->name('acara.create');
-    Route::post('/acara/store', [AcaraController::class, 'store'])->name('acara.store');
+    Route::post('/acara', [AcaraController::class, 'store'])->name('acara.store');
     Route::get('/acara/{acara}', [AcaraController::class, 'show'])->name('acara.show');
+    Route::delete('/acara/{acara}', [AcaraController::class, 'destroy'])->name('acara.destroy');
+    Route::get('/acara/{acara}/edit', [AcaraController::class, 'edit'])->name('acara.edit');
+    Route::get('/scan', [KehadiranController::class, 'index'])->name('kehadiran.index');
+    Route::post('/scan', [KehadiranController::class, 'record'])->name('kehadiran.record');
 });
 // Route::get('/acara/create', [AcaraController::class, 'create'])->name('acara.create');
 // Route::post('/acara/store', [AcaraController::class, 'store'])->name('acara.store');
-// Route::get('/acara/{acara}', [AcaraController::class, 'show'])->name('acara.show');
 
 
 // Attendance routes

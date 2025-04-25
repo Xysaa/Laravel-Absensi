@@ -18,11 +18,19 @@ class Anggota extends Model // atau Anggota jika Anda mengubah nama
 
     public function attendances()
     {
+        
         return $this->hasMany(Kehadiran::class,'student_id'); 
     }
+
 
     public function hasAttendedEvent($eventId)
     {
         return $this->attendances()->where('event_id', $eventId)->exists();
     }
+    public function qrcode()
+    {
+        return $this->hasOne(QrCode::class);
+    }
+
+
 }

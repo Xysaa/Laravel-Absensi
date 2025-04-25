@@ -11,9 +11,10 @@ class KehadiranController extends Controller
 {
     public function index()
     {
+        $now = now();
         $activeEvent = Acara::where('is_active', true)
-            ->whereDate('start_time', '<=', now())
-            ->whereDate('end_time', '>=', now())
+            ->where('start_time', '<=', $now)
+            ->where('end_time', '>=', $now)
             ->orderBy('start_time')
             ->first();
 
@@ -27,6 +28,7 @@ class KehadiranController extends Controller
             'nim' => 'required|string|exists:anggotas,nim',
             'event_id' => 'required|exists:acaras,id',
         ]);
+        
         \Log::info('Validated data: ' . json_encode($validated));
 
         $event = Acara::findOrFail($validated['event_id']);

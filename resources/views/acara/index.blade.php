@@ -63,7 +63,7 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <a href="{{ route('acara.show', $acara) }}" class="text-blue-600 hover:text-blue-900 mr-3">Detail</a>
-                            @if(Auth::user()->role === 'admin')
+                            @if(Auth::user()->is_admin === true)
                                 <a href="{{ route('acara.edit', $acara) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
                                 <form action="{{ route('acara.destroy', $acara) }}" method="POST" class="inline">
                                     @csrf
