@@ -65,7 +65,7 @@
 
     <footer class="bg-white py-4 mt-8 border-t">
         <div class="container mx-auto px-4 text-center text-gray-600 text-sm">
-            &copy; {{ date('Y') }} Sistem Absensi Mahasiswa Himpunan. All rights reserved.
+            &copy; {{ date('Y') }} TIM 1 ABSENSI
         </div>
     </footer>
 

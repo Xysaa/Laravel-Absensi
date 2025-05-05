@@ -4,7 +4,7 @@
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-800">Daftar Acara</h1>
-        @if(Auth::user()->is_admin=== true)
+        @if(Auth::user()->is_admin === true)
         <a href="{{ route('acara.create') }}" 
            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
             Buat Acara Baru
@@ -27,7 +27,7 @@
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Waktu Mulai</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Waktu Selesai</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                        @if(Auth::user()->is_admin === true)<th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>@endif
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -61,18 +61,18 @@
                                 </span>
                             @endif
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <a href="{{ route('acara.show', $acara) }}" class="text-blue-600 hover:text-blue-900 mr-3">Detail</a>
-                            @if(Auth::user()->is_admin === true)
-                                <a href="{{ route('acara.edit', $acara) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
-                                <form action="{{ route('acara.destroy', $acara) }}" method="POST" class="inline">
+                        @if(Auth::user()->is_admin === true)
+                        <td class="px-6escaped_string py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <a href="{{ route('acara.show', $a) }}" class="text-blue-600 hover:text-blue-900 mr-3">Detail</a>
+                                <a href="{{ route('acara.edit', $a) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
+                                <form action="{{ route('acara.destroy', $a) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-600 hover:text-red-900" 
                                             onclick="return confirm('Apakah Anda yakin ingin menghapus acara ini?')">Hapus</button>
                                 </form>
+                            </td>
                             @endif
-                        </td>
                     </tr>
                     @empty
                     <tr>

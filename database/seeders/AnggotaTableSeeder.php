@@ -15,7 +15,8 @@ class AnggotaTableSeeder extends Seeder
     {
         $anggotas = [];
         for ($i = 1; $i <= 10; $i++) {
-            $nim = sprintf('123140%03d', $i); // Membuat NIM: 123140001, 123140002, dst.
+            $nim = sprintf('123140%03d', $i);
+             // Membuat NIM: 123140001, 123140002, dst.
             $anggotas[] = [
                 'nim' => $nim,
                 'nama' => 'Anggota ' . Str::random(8), // Nama acak, misalnya: Anggota Xyz123

@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Kehadiran;
+use App\Models\Anggota;
+use Illuminate\Support\Facades\Response;
 class AcaraController extends Controller
 {
     public function __construct()
@@ -53,8 +56,14 @@ class AcaraController extends Controller
 
     public function show(Acara $acara)
     {
-        $kehadiran = $acara->kehadirans()->with('anggota')->get();
-        return view('acara.show', compact('acara', 'kehadiran'));
+        // $kehadiran = $acara->kehadirans()->with('anggota')->get();
+        // return view('acara.show', compact('acara', 'kehadiran'));
+        $kehadiran = Kehadiran::where('event_id', $acara->id)->with('anggota')->get();
+        $totalHadir = $kehadiran->count();
+        $totalAnggota = Anggota::count();
+        $totalTidakHadir = $totalAnggota - $totalHadir;
+
+        return view('acara.detail', compact('acara', 'kehadiran', 'totalHadir', 'totalTidakHadir', 'totalAnggota'));
     }
 
 
@@ -66,9 +75,9 @@ class AcaraController extends Controller
     public function update(Request $request, Acara $acara)
     {
         $validated = $request->validate([
-            'judul_acara' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-            'lokasi' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'location' => 'required|string|max:255',
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
             'is_active' => 'sometimes|boolean',
@@ -78,8 +87,7 @@ class AcaraController extends Controller
 
         $acara->update($validated);
 
-        return redirect()->route('acara.index')
-            ->with('success', 'Acara updated successfully.');
+        return redirect()->route('acara.index')->with('success', 'Acara berhasil diperbarui.');
     }
 
     public function destroy(Acara $acara)
@@ -88,5 +96,40 @@ class AcaraController extends Controller
 
         return redirect()->route('acara.index')
             ->with('success', 'acara deleted successfully.');
+    }
+    public function exportCsv(Acara $acara)
+    {
+        $kehadiran = Kehadiran::where('event_id', $acara->id)->with('anggota')->get();
+
+        $filename = 'kehadiran_' . str_replace(' ', '_', strtolower($acara->title)) . '_' . now()->format('Ymd_His') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $callback = function () use ($acara, $kehadiran) {
+            $file = fopen('php://output', 'w');
+
+            // Tambahkan BOM untuk UTF-8 agar mendukung karakter khusus (misalnya, di Excel)
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            // Header CSV
+            fputcsv($file, ['No', 'Nama Acara','NIM', 'Nama Anggota']);
+
+            // Data CSV
+            foreach ($kehadiran as $index => $hadir) {
+                fputcsv($file, [
+                    $index + 1,
+                    $acara->judul_acara,
+                    $hadir->anggota->nim,
+                    $hadir->anggota->nama,
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return Response::stream($callback, 200, $headers);
     }
 }

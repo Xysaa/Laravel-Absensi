@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Acara;
 use App\Models\Kehadiran;
 use App\Models\Anggota;
-
+use Illuminate\Support\Facades\Crypt;
 class KehadiranController extends Controller
 {
     public function index()
@@ -22,40 +22,53 @@ class KehadiranController extends Controller
     }
 
     public function record(Request $request)
-    {
-        \Log::info('Form data: ' . json_encode($request->all()));
-        $validated = $request->validate([
-            'nim' => 'required|string|exists:anggotas,nim',
-            'event_id' => 'required|exists:acaras,id',
-        ]);
-        
-        \Log::info('Validated data: ' . json_encode($validated));
+{
+    \Log::info('Form data (encrypted): ' . json_encode($request->all()));
 
-        $event = Acara::findOrFail($validated['event_id']);
-        $student = Anggota::where('nim', $validated['nim'])->firstOrFail();
-
-        // Cek apakah event sedang berlangsung
-        if (!$event->isInProgress()) {
-            return back()->with('error', 'Acara tidak sedang berlangsung.');
-        }
-
-        // Cek apakah mahasiswa sudah absen
-        \Log::info('Checking attendance for student ID: ' . $student->id . ', event ID: ' . $event->id);
-        if ($student->hasAttendedEvent($event->id)) {
-            return back()->with('error', 'Anda sudah melakukan absensi untuk acara ini.');
-        }
-
-        // Catat kehadiran
-        $kehadiran = Kehadiran::create([
-            'event_id' => $event->id,
-            'student_id' => $student->id,
-            'check_in_time' => now(),
-            'status' => 'hadir',
-        ]);
-        \Log::info('Kehadiran created: ' . json_encode($kehadiran));
-
-        return back()->with('success', 'Absensi berhasil dicatat.');
+    // Coba dekripsi NIM dari input QR
+    try {
+        $nim = Crypt::decryptString($request->input('nim'));
+    } catch (\Exception $e) {
+        \Log::error('Gagal mendekripsi NIM: ' . $e->getMessage());
+        return back()->with('error', 'QR Code tidak valid.');
     }
+
+    \Log::info('NIM setelah dekripsi: ' . $nim);
+
+    // Validasi setelah dekripsi
+    $validated = $request->validate([
+        'event_id' => 'required|exists:acaras,id',
+    ]);
+
+    $event = Acara::findOrFail($validated['event_id']);
+    $student = Anggota::where('nim', $nim)->first();
+
+    if (!$student) {
+        return back()->with('error', 'Mahasiswa dengan NIM ini tidak ditemukan.');
+    }
+
+    // Cek apakah event sedang berlangsung
+    if (!$event->isInProgress()) {
+        return back()->with('error', 'Acara tidak sedang berlangsung.');
+    }
+
+    // Cek apakah sudah absen
+    if ($student->hasAttendedEvent($event->id)) {
+        return back()->with('error', 'Anda sudah melakukan absensi untuk acara ini.');
+    }
+
+    // Catat kehadiran
+    $kehadiran = Kehadiran::create([
+        'event_id' => $event->id,
+        'student_id' => $student->id,
+        'check_in_time' => now(),
+        'status' => 'hadir',
+    ]);
+
+    \Log::info('Kehadiran created: ' . json_encode($kehadiran));
+
+    return back()->with('success', 'Absensi berhasil dicatat.');
+}
 
     public function adminIndex()
     {
