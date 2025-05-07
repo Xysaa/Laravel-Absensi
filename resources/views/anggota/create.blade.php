@@ -22,7 +22,7 @@
                 
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
-                    <input type="text" name="name" id="name" value="{{ old('name') }}" required 
+                    <input type="text" name="nama" id="name" value="{{ old('name') }}" required 
                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                     @error('name')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -30,8 +30,8 @@
                 </div>
                 
                 <div>
-                    <label for="major" class="block text-sm font-medium text-gray-700 mb-1">Jurusan</label>
-                    <input type="text" name="major" id="major" value="{{ old('major') }}" required 
+                    <label for="major" class="block text-sm font-medium text-gray-700 mb-1">Status Anggota</label>
+                    <input type="text" name="status_anggota" id="major" value="{{ old('major') }}" required 
                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                     @error('major')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -40,7 +40,7 @@
                 
                 <div>
                     <label for="year" class="block text-sm font-medium text-gray-700 mb-1">Angkatan</label>
-                    <input type="number" name="year" id="year" value="{{ old('year', date('Y')) }}" required min="2000" max="{{ date('Y') + 1 }}"
+                    <input type="number" name="angkatan" id="year" value="{{ old('year', date('Y')) }}" required min="2000" max="{{ date('Y') + 1 }}"
                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                     @error('year')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
