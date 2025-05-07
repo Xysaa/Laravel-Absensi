@@ -12,7 +12,7 @@ class Qrcode extends Model
    protected $primaryKey = 'id';
 
    protected $fillable = [
-      'qrcode'
+      'qrcode', 'anggota_id'
    ];
 
    protected $hidden = [
