@@ -29,6 +29,7 @@
                     @else
                         <a href="{{ route('kehadiran.index') }}" class="text-white hover:text-blue-200">Absensi</a>
                         <a href="{{ route('acara.index') }}" class="text-white hover:text-blue-200">Acara</a>
+                        <a href="{{ route('anggota.index') }}" class="text-white hover:text-blue-200">Anggota</a>
                         
                         @if(Auth::user()->role === 'admin')
                             <a href="{{ route('admin.kehadiran.index') }}" class="text-white hover:text-blue-200">Laporan Kehadiran</a>
