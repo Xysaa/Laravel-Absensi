@@ -12,11 +12,11 @@ class QrCodeSeeder extends Seeder
         $qrcode = [];
         for ($i = 1; $i <= 10; $i++) {
             $nim = sprintf('123140%03d', $i);
-            $nim_encrypted = Crypt::encryptString($nim); // Enkripsi NIM
+             // Enkripsi NIM
              // Membuat NIM: 123140001, 123140002, dst.
             $qrcode[] = [
                 'anggota_id' => $i,
-                'qrcode' => $nim_encrypted, // Simpan NIM terenkripsi
+                'qrcode' => $nim, // Simpan NIM terenkripsi
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
