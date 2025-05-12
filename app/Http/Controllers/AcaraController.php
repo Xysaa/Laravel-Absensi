@@ -101,7 +101,9 @@ class AcaraController extends Controller
     {
         $kehadiran = Kehadiran::where('event_id', $acara->id)->with('anggota')->get();
 
-        $filename = 'kehadiran_' . str_replace(' ', '_', strtolower($acara->title)) . '_' . now()->format('Ymd_His') . '.csv';
+        // Membuat nama file dengan format 'kehadiran_nama_acara_tanggal.csv'
+        $acaraTitle = str_replace(' ', '_', strtolower($acara->judul_acara)); // Ganti spasi dengan underscore
+        $filename = 'kehadiran_' . $acaraTitle . '_' . now()->format('Y-m-d_H-i-s') . '.csv'; // Format tanggal dengan tahun-bulan-hari_jam-menit-detik
 
         $headers = [
             'Content-Type' => 'text/csv',
@@ -115,13 +117,12 @@ class AcaraController extends Controller
             fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
             // Header CSV
-            fputcsv($file, ['No', 'Nama Acara','NIM', 'Nama Anggota']);
+            fputcsv($file, ['No', 'NIM', 'Nama Anggota']);
 
             // Data CSV
             foreach ($kehadiran as $index => $hadir) {
                 fputcsv($file, [
                     $index + 1,
-                    $acara->judul_acara,
                     $hadir->anggota->nim,
                     $hadir->anggota->nama,
                 ]);
@@ -132,4 +133,5 @@ class AcaraController extends Controller
 
         return Response::stream($callback, 200, $headers);
     }
+
 }

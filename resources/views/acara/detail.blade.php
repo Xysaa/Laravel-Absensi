@@ -5,7 +5,7 @@
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-2xl mx-auto">
         <div class="mb-6">
-            <h1 class="text-2xl font-bold text-gray-800">Detail Acara: {{ $acara->title }}</h1>
+            <h1 class="text-2xl font-bold text-gray-800">Detail Acara: {{ $acara->judul_acara }}</h1>
         </div>
 
         <!-- Card Statistik -->

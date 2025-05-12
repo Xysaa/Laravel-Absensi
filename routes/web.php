@@ -19,17 +19,10 @@ Route::post('/register', [AnggotaController::class, 'store'])->name('register.st
 
 
 
-Route::get('/test-acara-create', [AcaraController::class, 'create']);
-// Event routes
-Route::get('/acara', [AcaraController::class, 'index'])->name('acara.index');
 
 Route::middleware('auth')->group(function () {
     Route::middleware('is_admin')->group(function(){
-        Route::get('/acara/create', [AcaraController::class, 'create'])->name('acara.create');
-        Route::post('/acara', [AcaraController::class, 'store'])->name('acara.store');
-        Route::delete('/acara/{acara}', [AcaraController::class, 'destroy'])->name('acara.destroy');
-        Route::get('/acara/{acara}/edit', [AcaraController::class, 'edit'])->name('acara.edit');
-        Route::put('/acara/{acara}', [AcaraController::class, 'update'])->name('acara.update');
+        Route::resource('acara', AcaraController::class);
         Route::get('/anggota', [AnggotaController::class, 'index'])->name('anggota.index');
         Route::get('/anggota/create', [AnggotaController::class, 'create'])->name('anggota.create');
         Route::post('/anggota', [AnggotaController::class, 'store'])->name('anggota.store');

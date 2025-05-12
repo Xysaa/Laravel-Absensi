@@ -14,11 +14,25 @@ class AnggotaController extends Controller
         $this->middleware('is_admin');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $students = Anggota::orderBy('nim')->paginate(15);
+        $query = Anggota::query();
+
+        // Cek jika ada input pencarian
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('nim', 'like', '%' . $search . '%')
+                ->orWhere('nama', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Ambil data mahasiswa dengan pagination
+        $students = $query->paginate(10);
+
         return view('anggota.index', compact('students'));
     }
+
 
     public function create()
     {
@@ -54,29 +68,37 @@ class AnggotaController extends Controller
             ->with('success', 'Data mahasiswa & QR code berhasil dibuat.');
     }
 
-    public function edit(Anggota $student)
+    public function edit(Anggota $anggota)
     {
-        return view('anggota.edit', compact('student'));
+        if (!$anggota) {
+            return redirect()->route('anggota.index')->with('error', 'Data anggota tidak ditemukan.');
+        }
+        return view('anggota.edit', compact('anggota'));
     }
 
-    public function update(Request $request, Anggota $student)
+
+    public function update(Request $request, Anggota $anggota)
     {
         $validated = $request->validate([
-            'nim' => 'required|string|unique:anggotas,nim,' . $student->id,
+            'nim' => 'required|string|unique:anggotas,nim,' . $anggota->id,
             'nama' => 'required|string|max:255',
             'status_anggota' => 'required|string|max:100',
             'angkatan' => 'required|integer|min:2000|max:' . (date('Y') + 1),
         ]);
 
-        $student->update($validated);
+        $anggota->update($validated);
 
         return redirect()->route('anggota.index')
             ->with('success', 'Data mahasiswa berhasil diperbarui.');
     }
 
-    public function destroy(Anggota $student)
+    public function destroy(Anggota $anggota)
     {
-        $student->delete();
+        // Hapus record QR code terkait
+        QrCode::where('anggota_id', $anggota->id)->delete();
+
+        // Hapus anggota
+        $anggota->delete();
 
         return redirect()->route('anggota.index')
             ->with('success', 'Data mahasiswa berhasil dihapus.');
@@ -86,6 +108,13 @@ class AnggotaController extends Controller
     public function importForm()
     {
         return view('anggota.import');
+    }
+    public function show(Anggota $anggota)
+    {
+        // Optional: Retrieve related data if needed
+        $qrCode = QrCode::where('anggota_id', $anggota->id)->first();
+        
+        return view('anggota.show', compact('anggota', 'qrCode'));
     }
 
     public function importProcess(Request $request)
