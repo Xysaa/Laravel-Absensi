@@ -29,7 +29,7 @@ class QrcodeController extends Controller
     
         $qrCode = QrCode::size(200)->generate($anggota->qrcode->qrcode);
     
-        return view('welcome', [
+        return view('generateqr', [
             'qrCode' => $qrCode,
             'anggota' => $anggota
         ]);

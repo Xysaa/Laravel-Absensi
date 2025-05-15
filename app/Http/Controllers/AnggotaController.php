@@ -272,4 +272,19 @@ class AnggotaController extends Controller
         
         return redirect()->route('anggota.index')->with('success', $message);
     }
+    public function massUpdate(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'status_anggota' => 'required|string',
+        ]);
+
+        Anggota::whereIn('id', $request->ids)->update([
+            'status_anggota' => $request->status_anggota
+        ]);
+
+        return redirect()->route('anggota.index')->with('success', 'Status anggota berhasil diperbarui.');
+    }
+
+
 }
