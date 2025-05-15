@@ -7,6 +7,9 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\QrcodeController;
 Route::get('/', [QrcodeController::class, 'welcome'])->name('welcome');
 Route::post('/generate-qr', [QrcodeController::class, 'generateQr'])->name('generate.qr');
+Route::get('/generateqr', function () {
+    return view('generateqr');
+})->name('generateqr');
 
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -16,9 +19,6 @@ Route::get('/register', function () {
     return view('auth.register');
 })->middleware('guest')->name('register');
 Route::post('/register', [AnggotaController::class, 'store'])->name('register.store');
-
-
-
 
 Route::middleware('auth')->group(function () {
     Route::middleware('is_admin')->group(function(){
@@ -32,20 +32,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/anggota/{anggota}/show', [AnggotaController::class, 'show'])->name('anggota.show');
         Route::get('/anggota/import', [App\Http\Controllers\AnggotaController::class, 'importForm'])->name('anggota.import');
         Route::post('/anggota/import', [App\Http\Controllers\AnggotaController::class, 'importProcess'])->name('anggota.import.process');
+        Route::post('anggota/mass-update', [AnggotaController::class, 'massUpdate'])->name('anggota.mass-update');
     });
     Route::post('/absensi/record', [KehadiranController::class, 'record'])->name('kehadiran.record');
     Route::get('/absensi', [KehadiranController::class, 'index'])->name('kehadiran.index');
     Route::get('/acara/{acara}', [AcaraController::class, 'show'])->name('acara.show');
     Route::get('/acara/{acara}/export-csv', [AcaraController::class, 'exportCsv'])->name('acara.exportCsv');
 });
-// Route::get('/acara/create', [AcaraController::class, 'create'])->name('acara.create');
-// Route::post('/acara/store', [AcaraController::class, 'store'])->name('acara.store');
-
-
-// Attendance routes
-
-// Admin only routes
-// Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
-//     Route::get('/kehadiran', [KehadiranController::class, 'adminIndex'])->name('admin.kehadiran.index');
-    
-// });
