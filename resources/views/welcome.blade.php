@@ -45,7 +45,7 @@
             <span class="text-green-800 font-semibold text-base sm:text-lg">Absen</span>
         </a>
         <!-- Acara -->
-        <a href="{{ route('welcome') }}" class="flex flex-col items-center bg-white rounded-xl p-4 shadow-lg hover:scale-105 transition-transform duration-300 w-36 sm:w-40">
+        <a href="{{ route('halamanacara') }}" class="flex flex-col items-center bg-white rounded-xl p-4 shadow-lg hover:scale-105 transition-transform duration-300 w-36 sm:w-40">
             <img src="{{ asset('img/acara.png') }}" alt="Foto Acara" class="w-[80px] h-[80px] object-cover rounded-lg mb-2" />
             <span class="text-green-800 font-semibold text-base sm:text-lg">Acara</span>
         </a>
