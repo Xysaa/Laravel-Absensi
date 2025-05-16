@@ -35,7 +35,7 @@
             <label class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer">
                 <iconify-icon icon="line-md:upload" width="20" height="20"></iconify-icon>
                 <span>Import CSV</span>
-                <form action="{{ route('anggota.import') }}" method="POST" enctype="multipart/form-data" id="importForm">
+                <form action="{{ route('anggota.import.process') }}" method="POST" enctype="multipart/form-data" id="importForm">
                     @csrf
                     <input type="file" id="csvInput" name="file" accept=".csv" class="hidden" onchange="submitImportForm()">
                 </form>
