@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Acara extends Model
 {
     use HasFactory;
+
     protected $table = 'acaras'; 
+
     protected $fillable = [
         'judul_acara',
         'deskripsi',
@@ -16,7 +18,9 @@ class Acara extends Model
         'start_time',
         'end_time',
         'created_by',
-        'is_active'
+        'is_active',
+        'ketuplak',    // ditambahkan
+        'foto',        // ditambahkan
     ];
 
     protected $casts = [
@@ -32,7 +36,7 @@ class Acara extends Model
 
     public function attendances()
     {
-        return $this->hasMany(Kehadiran::class,'event_id');
+        return $this->hasMany(Kehadiran::class, 'event_id');
     }
 
     public function isInProgress()

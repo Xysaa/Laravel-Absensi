@@ -20,6 +20,8 @@ return new class extends Migration
             $table->dateTime('end_time');
             $table->foreignId('created_by')->constrained('users');
             $table->boolean('is_active')->default(true);
+            $table->string('ketuplak')->nullable(); // Tambah kolom ketuplak
+            $table->string('foto')->nullable();     // Tambah kolom foto (nama file atau path)
             $table->timestamps();
         });
     }
@@ -29,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('acara');
+        Schema::dropIfExists('acaras');
     }
 };
