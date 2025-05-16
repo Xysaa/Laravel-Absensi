@@ -11,48 +11,72 @@ use App\Models\Anggota;
 use Illuminate\Support\Facades\Response;
 class AcaraController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
+    // public function __construct()
+    // {
+    //     $this->middleware('auth');
         
-    }
+    // }
 
     public function index()
     {
         $acara = Acara::orderBy('created_at', 'desc')->paginate(10);
         return view('acara.index', compact('acara'));
     }
-
-    public function create()
-    {
-        \Log::info('Accessing acara.create route');
-        return view('acara.create');
+    public function halamanacara(){
+        $acara = Acara::orderBy('created_at', 'desc')->paginate(10);
+        return view('halamanacara', compact('acara'));
     }
+    public function halamandetailacara($id){
+        $acara = Acara::findOrFail($id);
+         
+        return view('detailacara', compact('acara'));
+    }
+
+
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'location' => 'required|string|max:255',
+            'judul_acara' => 'required|string|max:255',
+            'deskripsi' => 'nullable|string',
+            'lokasi' => 'required|string|max:255',
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
             'is_active' => 'sometimes|boolean',
+            'ketua_pelaksana' => 'required|string|max:255',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
+
+        // Handle foto upload
+        $fotoPath = null;
+        if ($request->hasFile('foto')) {
+            if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('img'), $filename); // simpan ke public/img
+            $fotoPath = 'img/' . $filename; // path yang akan disimpan di database
+    }
+ // simpan ke public/img
+        }
+
         $acara = Acara::create([
-            'judul_acara' => $validated['title'],
-            'deskripsi' => $validated['description'],
-            'lokasi' => $validated['location'],
+            'judul_acara' => $validated['judul_acara'],
+            'deskripsi' => $validated['deskripsi'],
+            'lokasi' => $validated['lokasi'],
             'start_time' => $validated['start_time'],
             'end_time' => $validated['end_time'],
             'is_active' => $request->has('is_active'),
             'created_by' => Auth::id(),
+            'ketuplak' => $validated['ketua_pelaksana'],
+            'foto' => $fotoPath,
         ]);
+        
 
         return redirect()->route('acara.index')
             ->with('success', 'Event created successfully.');
     }
+
 
     public function show(Acara $acara)
     {
@@ -67,21 +91,28 @@ class AcaraController extends Controller
     }
 
 
-    public function edit(Acara $acara)
-    {
-        return view('acara.edit', compact('acara'));
-    }
+
 
     public function update(Request $request, Acara $acara)
     {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'location' => 'required|string|max:255',
+            'judul_acara' => 'required|string|max:255',
+            'deskripsi' => 'nullable|string',
+            'lokasi' => 'required|string|max:255',
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
             'is_active' => 'sometimes|boolean',
+            'ketua_pelaksana' => 'required|string|max:255',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
+
+
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('img'), $filename);
+            $validated['foto'] = 'img/' . $filename;
+        }
 
         $validated['is_active'] = $request->has('is_active');
 
@@ -89,6 +120,7 @@ class AcaraController extends Controller
 
         return redirect()->route('acara.index')->with('success', 'Acara berhasil diperbarui.');
     }
+
 
     public function destroy(Acara $acara)
     {

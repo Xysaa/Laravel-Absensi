@@ -9,47 +9,50 @@ use App\Models\Anggota;
 
 class KehadiranController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $now = now();
-        $activeEvent = Acara::where('is_active', true)
-            ->where('start_time', '<=', $now)
-            ->where('end_time', '>=', $now)
-            ->orderBy('start_time')
-            ->first();
+        if ($request->has('event_id')) {
+            $activeEvents = Acara::where('id', $request->event_id)
+                ->where('is_active', true)
+                ->where('start_time', '<=', $now)
+                ->where('end_time', '>=', $now)
+                ->get();
+        } else {
+            $activeEvents = Acara::where('is_active', true)
+                ->where('start_time', '<=', $now)
+                ->where('end_time', '>=', $now)
+                ->orderBy('start_time')
+                ->get();
+        }
 
-        return view('kehadiran.index', compact('activeEvent'));
+        return view('kehadiran.index', compact('activeEvents'));
     }
 
     public function record(Request $request)
     {
-        // Validasi input
         $validated = $request->validate([
             'event_id' => 'required|exists:acaras,id',
-            'nim'      => 'required|string',  // NIM plain text
+            'nim'      => 'required|string',
         ]);
 
         $event = Acara::findOrFail($validated['event_id']);
         $nim   = $validated['nim'];
 
-        // Cari mahasiswa berdasarkan NIM
         $student = Anggota::where('nim', $nim)->first();
 
         if (!$student) {
             return back()->with('error', 'Mahasiswa dengan NIM ini tidak ditemukan.');
         }
 
-        // Cek apakah event sedang berlangsung
         if (!$event->isInProgress()) {
             return back()->with('error', 'Acara tidak sedang berlangsung.');
         }
 
-        // Cek apakah sudah absen
         if ($student->hasAttendedEvent($event->id)) {
             return back()->with('error', 'Anda sudah melakukan absensi untuk acara ini.');
         }
 
-        // Catat kehadiran
         Kehadiran::create([
             'event_id'      => $event->id,
             'student_id'    => $student->id,
