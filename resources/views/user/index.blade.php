@@ -49,7 +49,7 @@
           <tr class="sm:table-row border-b">
             <td class="sm:table-cell px-4 py-2 font-semibold">{{ $index + 1 }}</td>
             <td class="sm:table-cell px-4 py-2">{{ $user->name }}</td>
-            <td class="sm:table-cell px-4 py-2">{{ $user->is_admin ? 'Admin' : 'User' }}</td>
+            <td class="sm:table-cell px-4 py-2">{{ $user->is_admin ? 'Admin' : 'Petugas' }}</td>
             <td class="sm:table-cell px-4 py-2">
               <div class="flex gap-2 mt-2 sm:mt-0">
                 <button type="button" @click="
