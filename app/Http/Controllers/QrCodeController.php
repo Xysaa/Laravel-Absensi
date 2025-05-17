@@ -8,7 +8,7 @@ use App\Models\QrCode as QrcodeModel;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Models\Anggota;
 
-class QrcodeController extends Controller
+class QrCodeController extends Controller
 {
     public function welcome()
     {
